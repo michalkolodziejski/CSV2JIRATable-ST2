@@ -1,0 +1,10 @@
+{
+	"normalize_line_endings" : true,
+	"delete_blank_lines" : true,
+	
+	"national_characters" :  "xmlcharrefreplace",
+	"default_line_ending" : "\n",
+
+	"column_separator" : "|",
+	"header_separator" : "||"
+}

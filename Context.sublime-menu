@@ -1,0 +1,11 @@
+[
+    { "caption": "-" },
+    {
+        "caption": "CSV2JIRA",
+        "children":
+        [
+            { "command": "csvtojira", "caption": "Convert & Copy" }
+        ]
+    },
+    { "caption": "-"}
+]
