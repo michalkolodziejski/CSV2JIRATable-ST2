@@ -16,9 +16,10 @@ if sublime.version() == '' or int(sublime.version()) > 3000:
 
 class CsvtojiraCommand(sublime_plugin.TextCommand):
 	def setClipboardData(self, data):
-	    p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
-	    p.stdin.write(data)
-	    p.stdin.close()
+	    sublime.set_clipboard(data)
+	    # p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
+	    # p.stdin.write(data)
+	    # p.stdin.close()
 
 	def normalize_line_endings(self, string):
 		line_endings = self.view.settings().get('default_line_ending')
