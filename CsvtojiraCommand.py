@@ -17,9 +17,6 @@ if sublime.version() == '' or int(sublime.version()) > 3000:
 class CsvtojiraCommand(sublime_plugin.TextCommand):
 	def setClipboardData(self, data):
 	    sublime.set_clipboard(data)
-	    # p = subprocess.Popen(['pbcopy'], stdin=subprocess.PIPE)
-	    # p.stdin.write(data)
-	    # p.stdin.close()
 
 	def normalize_line_endings(self, string):
 		line_endings = self.view.settings().get('default_line_ending')
@@ -66,6 +63,7 @@ class CsvtojiraCommand(sublime_plugin.TextCommand):
 		nationalCharacters = settings.get('national_characters')
 		normalizeLineEndings = settings.get('normalize_line_endings')
 		deleteBlankLines = settings.get('delete_blank_lines')
+		inputSeparator = settings.get('input_separator')
 
 		self.debugPrint("* column_separator: "+columnSeparator)
 		self.debugPrint("* header_separator: "+headerSeparator)
@@ -73,7 +71,8 @@ class CsvtojiraCommand(sublime_plugin.TextCommand):
 		self.debugPrint("* default_line_ending: "+':'.join('0x'+x.encode('hex') for x in str(defaultLineEnding)))
 		self.debugPrint("* normalize_line_endings: "+str(normalizeLineEndings))
 		self.debugPrint("* delete_blank_lines: "+str(deleteBlankLines))
-
+		self.debugPrint("* input_separator: "+str(inputSeparator))
+		
 		view = self.view
 
 		self.infoPrint("input characters="+str(view.size()))
@@ -89,10 +88,10 @@ class CsvtojiraCommand(sublime_plugin.TextCommand):
 
 		# special thanks to Max Shawabkeh for this REGEXP (http://stackoverflow.com/questions/2212933/python-regex-for-reading-csv-like-rows)
 
-		r = re.compile(r'''
+		r = re.compile(r"""
 		    \s*                # Any whitespace.
 		    (                  # Start capturing here.
-		      [^,"']*?         # Either a series of non-comma non-quote characters.
+		      [^""" + re.escape(inputSeparator) + r""""']*?         # Either a series of non-comma non-quote characters.
 		      |                # OR
 		      "(?:             # A double-quote followed by a string of characters...
 		          [^"\\]|\\.   # That are either non-quotes or escaped...
@@ -102,8 +101,8 @@ class CsvtojiraCommand(sublime_plugin.TextCommand):
 		      '(?:[^'\\]|\\.)*'# Same as above, for single quotes.
 		    )                  # Done capturing.
 		    \s*                # Allow arbitrary space before the comma.
-		    (?:,|$)            # Followed by a comma or the end of a string.
-		    ''', re.VERBOSE)
+		    (?:""" + re.escape(inputSeparator) + r"""|$)            # Followed by a comma or the end of a string.
+		    """, re.VERBOSE)
 
 		returnValue = ""
 

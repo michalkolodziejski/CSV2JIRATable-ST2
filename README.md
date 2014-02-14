@@ -143,15 +143,23 @@ unix    | '\n\n'		| '\n'
 
 ### Default line ending (default: "\n")
 This setting determines what character should be used to end a line in output.
+
 ``` js
 {
 "default_line_ending" : "\n"
 }
 ```
 
+### Input separator (default: "\t")
+This setting determines added input_separator parameter to chose which character to treat as separator while parsing input lines.
+``` js
+{
+"input_separator" : "\t"
+}
+```
 
 ## Credits
-**Special thanks to Max Shawabkeh for his REGEXP (http://stackoverflow.com/questions/2212933/python-regex-for-reading-csv-like-rows)
+***Special thanks to Max Shawabkeh for his REGEXP (http://stackoverflow.com/questions/2212933/python-regex-for-reading-csv-like-rows)***
 
 It all started by 'scratching own itch' - plugin created solely for my own consumption. Then I've decided to share it with ST2 users-community.
 
@@ -160,3 +168,11 @@ It all started by 'scratching own itch' - plugin created solely for my own consu
 2013-12-31
 
 * Initial version.
+
+2014-02-12
+
+* Fixed issue #1 https://github.com/michalkolodziejski/CSV2JIRATable-ST2/issues/1
+
+2014-02-14
+
+* added parameter "input_separator" to set separator character/string for columns in input text
