@@ -5,7 +5,7 @@
 	"national_characters" :  "xmlcharrefreplace",
 	"default_line_ending" : "\n",
 
-	"input_separator" : "\t",
+	"input_separator" : ",",
 
 	"column_separator" : "|",
 	"header_separator" : "||"
