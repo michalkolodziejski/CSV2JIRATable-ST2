@@ -71,7 +71,7 @@ class CsvtojiraCommand(sublime_plugin.TextCommand):
 		self.debugPrint("* default_line_ending: "+':'.join('0x'+x.encode('hex') for x in str(defaultLineEnding)))
 		self.debugPrint("* normalize_line_endings: "+str(normalizeLineEndings))
 		self.debugPrint("* delete_blank_lines: "+str(deleteBlankLines))
-		self.debugPrint("* input_separator: "+str(inputSeparator))
+		self.debugPrint("* input_separator: "+':'.join('0x'+x.encode('hex') for x in str(inputSeparator)))
 		
 		view = self.view
 
