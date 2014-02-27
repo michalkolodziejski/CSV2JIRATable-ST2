@@ -64,6 +64,7 @@ class CsvtojiraCommand(sublime_plugin.TextCommand):
 		normalizeLineEndings = settings.get('normalize_line_endings')
 		deleteBlankLines = settings.get('delete_blank_lines')
 		inputSeparator = settings.get('input_separator')
+		processOnlySelection = settings.get('process_only_selection')
 
 		self.debugPrint("* column_separator: "+columnSeparator)
 		self.debugPrint("* header_separator: "+headerSeparator)
@@ -72,66 +73,81 @@ class CsvtojiraCommand(sublime_plugin.TextCommand):
 		self.debugPrint("* normalize_line_endings: "+str(normalizeLineEndings))
 		self.debugPrint("* delete_blank_lines: "+str(deleteBlankLines))
 		self.debugPrint("* input_separator: "+':'.join('0x'+x.encode('hex') for x in str(inputSeparator)))
+		self.debugPrint("* process_only_selection: "+str(processOnlySelection))
 		
-		view = self.view
-
-		self.infoPrint("input characters="+str(view.size()))
-		
-		if not view:
-			return
-
-		rowNumber = 1
-        
-		lines = view.lines(sublime.Region(0, view.size()))
-
-		self.infoPrint("input lines="+str(len(lines)))
-
-		# special thanks to Max Shawabkeh for this REGEXP (http://stackoverflow.com/questions/2212933/python-regex-for-reading-csv-like-rows)
-
-		r = re.compile(r"""
-		    \s*                # Any whitespace.
-		    (                  # Start capturing here.
-		      [^""" + re.escape(inputSeparator) + r""""']*?         # Either a series of non-comma non-quote characters.
-		      |                # OR
-		      "(?:             # A double-quote followed by a string of characters...
-		          [^"\\]|\\.   # That are either non-quotes or escaped...
-		       )*              # ...repeated any number of times.
-		      "                # Followed by a closing double-quote.
-		      |                # OR
-		      '(?:[^'\\]|\\.)*'# Same as above, for single quotes.
-		    )                  # Done capturing.
-		    \s*                # Allow arbitrary space before the comma.
-		    (?:""" + re.escape(inputSeparator) + r"""|$)            # Followed by a comma or the end of a string.
-		    """, re.VERBOSE)
-
 		returnValue = ""
+		inputText = ""
 
-		for line in lines:
-			if (normalizeLineEndings):
-				string = self.delete_blank_lines(view.substr(line)).strip()
+		if processOnlySelection:
+			inputRegions = self.view.sel()
+		else:
+			inputRegions = [sublime.Region(0, self.view.size())]
+
+		for region in inputRegions:
+			input = self.view.substr(region)
+			# view = self.view.sel()
+
+			self.infoPrint("input characters="+str(region.end()-region.begin()))
 			
-			if (deleteBlankLines):
-				string = self.normalize_line_endings(string)
+			# if region.empty():
+				# return
 
-			string = string.encode('ascii',nationalCharacters)
+			rowNumber = 1
+	        
+			# lines = view.lines(sublime.Region(0, view.size()))
 
-			if len(string) == 0:
+			lines = self.view.lines(region)
+
+			self.infoPrint("input lines="+str(len(lines)))
+
+			# special thanks to Max Shawabkeh for this REGEXP (http://stackoverflow.com/questions/2212933/python-regex-for-reading-csv-like-rows)
+
+			r = re.compile(r"""
+			    \s*                # Any whitespace.
+			    (                  # Start capturing here.
+			      [^""" + re.escape(inputSeparator) + r""""']*?         # Either a series of non-comma non-quote characters.
+			      |                # OR
+			      "(?:             # A double-quote followed by a string of characters...
+			          [^"\\]|\\.   # That are either non-quotes or escaped...
+			       )*              # ...repeated any number of times.
+			      "                # Followed by a closing double-quote.
+			      |                # OR
+			      '(?:[^'\\]|\\.)*'# Same as above, for single quotes.
+			    )                  # Done capturing.
+			    \s*                # Allow arbitrary space before the comma.
+			    (?:""" + re.escape(inputSeparator) + r"""|$)            # Followed by a comma or the end of a string.
+			    """, re.VERBOSE)
+
+			returnValue = ""
+
+			for line in lines:
+				string = self.view.substr(line)
+		
+				if (normalizeLineEndings):
+					string = self.delete_blank_lines(string).strip()
+				
+				if (deleteBlankLines):
+					string = self.normalize_line_endings(string)
+
+				string = string.encode('ascii',nationalCharacters)
+
+				if len(string) == 0:
+					rowNumber += 1
+					continue
+
+				if rowNumber == 1:
+					currentSeparator = headerSeparator
+				else:
+					currentSeparator = columnSeparator
+
+				returnValue += currentSeparator+(currentSeparator.join(r.findall(string)))+defaultLineEnding
+
 				rowNumber += 1
-				continue
 
-			if rowNumber == 1:
-				currentSeparator = headerSeparator
-			else:
-				currentSeparator = columnSeparator
+			self.debugPrint("output: " + returnValue)
 
-			returnValue += currentSeparator+(currentSeparator.join(r.findall(string)))+defaultLineEnding
+			self.infoPrint("copying output to clipboard!")
 
-			rowNumber += 1
+			self.setClipboardData(returnValue)
 
-		self.debugPrint("output: " + returnValue)
-
-		self.infoPrint("copying output to clipboard!")
-
-		self.setClipboardData(returnValue)
-
-		self.debugPrint("STOP")
+			self.debugPrint("STOP")

@@ -158,6 +158,14 @@ This setting determines added input_separator parameter to chose which character
 }
 ```
 
+### Process only selection (default: "true")
+This setting determines if plugin should process a whole file (when set to "false") or only the selected text in view (when set to "true")
+``` js
+{
+"process_only_selection" : true
+}
+```
+
 ## Credits
 ***Special thanks to Max Shawabkeh for his REGEXP (http://stackoverflow.com/questions/2212933/python-regex-for-reading-csv-like-rows)***
 
@@ -176,3 +184,9 @@ It all started by 'scratching own itch' - plugin created solely for my own consu
 2014-02-14
 
 * added parameter "input_separator" to set separator character/string for columns in input text
+
+2014-02-27
+
+* added parameter "process_only_selection" to determine if plugin should process a whole file (when set to "false") or only the selected text in view (when set to "true") (Fixed issue #2 https://github.com/michalkolodziejski/CSV2JIRATable-ST2/issues/2)
+
+
