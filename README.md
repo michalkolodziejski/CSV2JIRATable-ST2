@@ -189,4 +189,6 @@ It all started by 'scratching own itch' - plugin created solely for my own consu
 
 * added parameter "process_only_selection" to determine if plugin should process a whole file (when set to "false") or only the selected text in view (when set to "true") (Fixed issue #2 https://github.com/michalkolodziejski/CSV2JIRATable-ST2/issues/2)
 
+## Problems?
 
+[Submit an issue](https://github.com/michalkolodziejski/CSV2JIRATable-ST2/issues).
